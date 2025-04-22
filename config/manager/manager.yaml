@@ -27,12 +27,12 @@ spec:
         - /manager
         args:
         - "--leader-elect"
-        - "--feature-gates=MachinePool=${EXP_MACHINE_POOL:=true}"
+        - "--feature-gates=MachinePool=true"
         - "--metrics-bind-address=127.0.0.1:8080"
-        - "--logging-format=${LOG_FORMAT:=text}"
-        - "--init-oci-clients-on-startup=${INIT_OCI_CLIENTS_ON_STARTUP:=true}"
-        - "--enable-instance-metadata-service-lookup=${ENABLE_INSTANCE_METADATA_SERVICE_LOOKUP:=false}"
-        image: controller:latest
+        - "--logging-format=text"
+        - "--init-oci-clients-on-startup=true"
+        - "--enable-instance-metadata-service-lookup=false"
+        image: quay.io/mlorenzofr/cluster-api-oci-controller-amd64:openshift-4.18
         name: manager
         securityContext:
           allowPrivilegeEscalation: false
@@ -71,7 +71,7 @@ spec:
             - weight: 10
               preference:
                 matchExpressions:
-                  - key: ${K8S_CP_LABEL:=node-role.kubernetes.io/control-plane}
+                  - key: node-role.kubernetes.io/control-plane
                     operator: Exists
               # remove once usage of node-role.kubernetes.io/master is removed from Kubernetes
             - weight: 10

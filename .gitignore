@@ -54,3 +54,6 @@ test/e2e/data/infrastructure-oci/v1beta1/cluster-template-machine-pool.yaml
 
 # tilt
 tilt-settings.json
+
+# oci private data
+config/default/private/

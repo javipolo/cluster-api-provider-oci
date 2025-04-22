@@ -1,0 +1,31 @@
+---
+kind: SecurityContextConstraints
+apiVersion: security.openshift.io/v1
+metadata:
+  name: oci-scc
+allowHostDirVolumePlugin: true
+allowHostIPC: false
+allowHostNetwork: true
+allowHostPID: false
+allowHostPorts: true
+allowPrivilegeEscalation: true
+allowPrivilegedContainer: true
+allowedCapabilities:
+  - '*'
+defaultAddCapabilities: []
+fsGroup:
+  type: RunAsAny
+groups: []
+priority:
+readOnlyRootFilesystem: false
+requiredDropCapabilities: []
+runAsUser:
+  type: RunAsAny
+seLinuxContext:
+  type: RunAsAny
+seccompProfiles:
+  - '*'
+supplementalGroups:
+  type: RunAsAny
+users:
+  - system:serviceaccount:cluster-api-provider-oci-system:capoci-controller-manager

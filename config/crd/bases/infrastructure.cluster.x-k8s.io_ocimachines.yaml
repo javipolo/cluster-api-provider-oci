@@ -329,7 +329,9 @@ spec:
                           type: string
                       type: object
                     launchParavirtualizedVolumeAttachment:
-                      description: The details of paravirtualized volume attachment.
+                      description: LaunchParavirtualizedVolumeAttachment specifies
+                        the paravirtualized volume attachments to create as part of
+                        the launch instance operation.
                       properties:
                         device:
                           description: The device name. To retrieve a list of devices
@@ -395,7 +397,7 @@ spec:
                           type: string
                       type: object
                     volumeType:
-                      description: The type of volume. Valid value is iscsi/paravirtualized.
+                      description: The type of volume. Valid value is iscsi.
                       type: string
                   type: object
                 type: array
@@ -1266,7 +1268,9 @@ spec:
                           type: string
                       type: object
                     launchParavirtualizedVolumeAttachment:
-                      description: The details of paravirtualized volume attachment.
+                      description: LaunchParavirtualizedVolumeAttachment specifies
+                        the paravirtualized volume attachments to create as part of
+                        the launch instance operation.
                       properties:
                         device:
                           description: The device name. To retrieve a list of devices
@@ -1277,7 +1281,7 @@ spec:
                             and it's changeable. Avoid entering confidential information.
                           type: string
                         isPvEncryptionInTransitEnabled:
-                          description: Refer the top-level definition of isPvEncryptionInTransitEnabled.
+                          description: Refer the top-level definition of encryptionInTransitType.
                             The default value is False.
                           type: boolean
                         isReadOnly:
