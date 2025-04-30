@@ -8,5 +8,5 @@ spec:
     spec:
       containers:
         # Change the value of image field below to your controller image URL
-        - image: quay.io/mlorenzofr/cluster-api-oci-controller-amd64:openshift-4.18
+        - image: quay.io/jpolo/cluster-api-oci-controller-amd64:dev
           name: manager
