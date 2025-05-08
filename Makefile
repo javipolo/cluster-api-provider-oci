@@ -27,6 +27,7 @@ ARCH ?= amd64
 ALL_ARCH = amd64 arm64 
 TOOLS_DIR := hack/tools
 TOOLS_BIN_DIR := $(abspath $(TOOLS_DIR)/bin)
+CONTAINER_ENGINE ?= docker
 
 GINKGO_NODES ?= 3
 GINKGO_NOCOLOR ?= false
@@ -192,19 +193,19 @@ lint: $(GOLANGCI_LINT)
 
 .PHONY: docker-pull-prerequisites
 docker-pull-prerequisites:
-    docker pull docker/dockerfile:1.1-experimental
-	docker pull docker.io/library/golang:1.19
-	docker pull gcr.io/distroless/static:latest
+    ${CONTAINER_ENGINE} pull docker/dockerfile:1.1-experimental
+	${CONTAINER_ENGINE} pull docker.io/library/golang:1.19
+	${CONTAINER_ENGINE} pull gcr.io/distroless/static:latest
 
 .PHONY: lint docker-build
 docker-build: docker-pull-prerequisites ## Build the docker image for controller-manager
-	docker build --build-arg ARCH=$(ARCH) --build-arg LDFLAGS="$(LDFLAGS)" . -t $(CONTROLLER_IMG)-$(ARCH):$(TAG)
+	${CONTAINER_ENGINE} build --build-arg ARCH=$(ARCH) --build-arg LDFLAGS="$(LDFLAGS)" . -t $(CONTROLLER_IMG)-$(ARCH):$(TAG)
 	$(MAKE) set-manifest-image MANIFEST_IMG=$(CONTROLLER_IMG)-$(ARCH) MANIFEST_TAG=$(TAG) TARGET_RESOURCE="./config/default/manager_image_patch.yaml"
 	$(MAKE) set-manifest-pull-policy TARGET_RESOURCE="./config/default/manager_pull_policy.yaml"
 
 .PHONY: docker-push
 docker-push: ## Push the docker image
-	docker push $(CONTROLLER_IMG)-$(ARCH):$(TAG)
+	${CONTAINER_ENGINE} push $(CONTROLLER_IMG)-$(ARCH):$(TAG)
 
 .PHONY: set-manifest-image
 set-manifest-image:
@@ -237,9 +238,9 @@ docker-push-%:
 .PHONY: docker-push-manifest
 docker-push-manifest: ## Push the fat manifest docker image.
 	## Minimum docker version 18.06.0 is required for creating and pushing manifest images.
-	docker manifest create --amend $(CONTROLLER_IMG):$(TAG) $(shell echo $(ALL_ARCH) | sed -e "s~[^ ]*~$(CONTROLLER_IMG)\-&:$(TAG)~g")
+	${CONTAINER_ENGINE} manifest create --amend $(CONTROLLER_IMG):$(TAG) $(shell echo $(ALL_ARCH) | sed -e "s~[^ ]*~$(CONTROLLER_IMG)\-&:$(TAG)~g")
 	@for arch in $(ALL_ARCH); do docker manifest annotate --arch $${arch} ${CONTROLLER_IMG}:${TAG} ${CONTROLLER_IMG}-$${arch}:${TAG}; done
-	docker manifest push --purge ${CONTROLLER_IMG}:${TAG}
+	${CONTAINER_ENGINE} manifest push --purge ${CONTROLLER_IMG}:${TAG}
 	MANIFEST_IMG=$(CONTROLLER_IMG) MANIFEST_TAG=$(TAG) $(MAKE) set-manifest-image
 
 ##@ Deployment
