@@ -236,6 +236,21 @@ func (r *OCIClusterReconciler) reconcile(ctx context.Context, logger logr.Logger
 			infrastructurev1beta2.DRGRPCAttachmentReconciliationFailedReason, infrastructurev1beta2.DRGRPCAttachmentEventReady); err != nil {
 			return ctrl.Result{}, err
 		}
+
+		// Reconcile the API Server LoadBalancer based on the specified LoadBalancerType.
+		loadBalancerType := cluster.Spec.NetworkSpec.APIServerLB.LoadBalancerType
+		if loadBalancerType == infrastructurev1beta2.LoadBalancerTypeLB {
+			if err := r.reconcileComponent(ctx, cluster, clusterScope.ReconcileApiServerLB, "Api Server Loadbalancer",
+				infrastructurev1beta2.APIServerLoadBalancerFailedReason, infrastructurev1beta2.ApiServerLoadBalancerEventReady); err != nil {
+				return ctrl.Result{}, err
+			}
+		} else {
+			if err := r.reconcileComponent(ctx, cluster, clusterScope.ReconcileApiServerNLB, "Api Server Network Loadbalancer",
+				infrastructurev1beta2.APIServerLoadBalancerFailedReason, infrastructurev1beta2.ApiServerLoadBalancerEventReady); err != nil {
+				return ctrl.Result{}, err
+			}
+		}
+
 	} else {
 		logger.Info("VCN Reconciliation is skipped")
 	}
@@ -243,20 +258,6 @@ func (r *OCIClusterReconciler) reconcile(ctx context.Context, logger logr.Logger
 	if err := r.reconcileComponent(ctx, cluster, clusterScope.ReconcileFailureDomains, "Failure Domain",
 		infrastructurev1beta2.FailureDomainFailedReason, infrastructurev1beta2.FailureDomainEventReady); err != nil {
 		return ctrl.Result{}, err
-	}
-
-	// Reconcile the API Server LoadBalancer based on the specified LoadBalancerType.
-	loadBalancerType := cluster.Spec.NetworkSpec.APIServerLB.LoadBalancerType
-	if loadBalancerType == infrastructurev1beta2.LoadBalancerTypeLB {
-		if err := r.reconcileComponent(ctx, cluster, clusterScope.ReconcileApiServerLB, "Api Server Loadbalancer",
-			infrastructurev1beta2.APIServerLoadBalancerFailedReason, infrastructurev1beta2.ApiServerLoadBalancerEventReady); err != nil {
-			return ctrl.Result{}, err
-		}
-	} else {
-		if err := r.reconcileComponent(ctx, cluster, clusterScope.ReconcileApiServerNLB, "Api Server Network Loadbalancer",
-			infrastructurev1beta2.APIServerLoadBalancerFailedReason, infrastructurev1beta2.ApiServerLoadBalancerEventReady); err != nil {
-			return ctrl.Result{}, err
-		}
 	}
 
 	conditions.MarkTrue(cluster, infrastructurev1beta2.ClusterReadyCondition)
