@@ -257,6 +257,10 @@ deploy: manifests $(KUSTOMIZE) ## Deploy controller to the K8s cluster specified
 undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config.
 	$(KUSTOMIZE) build config/default | kubectl delete -f -
 
+.PHONY: import-oci-cli-config
+import-oci-cli-config:
+	scripts/import-oci-cli-config.sh
+
 MDBOOK = /tmp/mdbook
 .PHONY: build-book
 build-book: ## Download mdbook locally if necessary.
